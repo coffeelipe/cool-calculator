@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>The Cool Calculator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta charset="UTF-8"/>
+        <link rel="stylesheet" href="styles.css"/>
+    </head>
+    <body>
+        <div id="container">
+            <div class="display">
+                <div id="result" onclick="copyToClipboard(this)">|</div>
+                <div id="expression">0</div>
+            </div>
+            <div class="keyboard">
+                <button class="button" onclick="inputClick(this)">C</button>
+                <button class="button" onclick="inputClick(this)">+/-</button>
+                <button class="button" onclick="inputClick(this)">%</button>
+                <button class="button" onclick="inputClick(this)">⇦</button>
+
+                <button class="button" onclick="inputClick(this)">7</button>
+                <button class="button" onclick="inputClick(this)">8</button>
+                <button class="button" onclick="inputClick(this)">9</button>
+                <button class="button operator" onclick="inputClick(this)">÷</button>
+
+                <button class="button" onclick="inputClick(this)">4</button>
+                <button class="button" onclick="inputClick(this)">5</button>
+                <button class="button" onclick="inputClick(this)">6</button>
+                <button class="button operator" onclick="inputClick(this)">×</button>
+
+                <button class="button" onclick="inputClick(this)">1</button>
+                <button class="button" onclick="inputClick(this)">2</button>
+                <button class="button" onclick="inputClick(this)">3</button>
+                <button class="button operator" onclick="inputClick(this)">-</button>
+
+                <button class="button" onclick="inputClick(this)">0</button>
+                <button class="button" onclick="inputClick(this)">.</button>
+                <button class="button" onclick="inputClick(this)" id="equal">=</button>
+                <button class="button operator" onclick="inputClick(this)">+</button>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.min.js"></script>
+    </body>
+</html>
