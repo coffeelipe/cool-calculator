@@ -107,8 +107,6 @@
     background-color: rgb(9, 107, 124);
   }
   
-  /* Media queries for different screen sizes */
-  
   /* For smaller screens like mobile phones */
   @media (max-width: 576px) {
     #container {
@@ -147,7 +145,7 @@
   @media (min-width: 1025px) {
     #container {
       width: 50vw;
-      max-width: 400px; /* Keep the max width */
+      max-width: 400px;
       aspect-ratio: 2 / 3;
     }
   
