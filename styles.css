@@ -6,10 +6,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 100%;
     background-color: #f0f0f0;
     margin: 0;
+    padding: 0;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    overflow: scroll;
+  }
+
+  html {
+    height: 100%;
+    padding: 0;
+    overflow: scroll;
   }
   
   #container {
@@ -18,8 +26,13 @@
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    height: 700px;
+    width: 90vw;
+    min-width: 320px;
+    max-width: 400px;
+    height: 90vh;
+    min-height: 500px;
+    max-height: 700px;
+    aspect-ratio: 2 / 3;
   }
   
   .display {
@@ -30,12 +43,12 @@
     background-color: #333;
     color: white;
     font-size: 2em;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 5.5%;
+    border-radius: 10px 10px 0 0;
     text-align: right;
     flex: 0 0 auto;
   }
-
+  
   #result {
     color: rgb(255, 166, 63);
   }
@@ -44,15 +57,15 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    margin: 20px;
+    margin: 5%;
+    gap: 1%;
     flex: 1;
   }
   
   .button {
     flex-grow: 1; 
-    flex-basis: 20%; 
+    flex-basis: calc(25% - 10px);
     height: auto; 
-    margin: 1px; 
     background-color: #ddd;
     border: none;
     border-radius: 5px;
@@ -66,26 +79,26 @@
     background-color: #ccc;
   }
   
-  .button:active {
+   .button:active {
     background-color: #bbb;
   }
-
+  
   .operator {
     background-color: rgb(255, 166, 63);
-    transition: background-color 0,2s;
+    transition: background-color 0.2s;
   }
-
+  
   .operator:hover {
     background-color: rgb(233, 150, 55);
   }
-
+  
   .operator:active {
     background-color: rgb(214, 137, 49);
   }
-
+  
   #equal {
     background-color: rgb(16, 151, 175);
-    transition: 0,2s;
+    transition: 0.2s;
   }
   #equal:hover {
     background-color: rgb(12, 127, 148);
@@ -93,3 +106,58 @@
   #equal:active {
     background-color: rgb(9, 107, 124);
   }
+  
+  /* Media queries for different screen sizes */
+  
+  /* For smaller screens like mobile phones */
+  @media (max-width: 576px) {
+    #container {
+      width: 80vw; 
+      height: 80vh; 
+      aspect-ratio: 2/3;
+    }
+    .button {
+      flex-basis: calc(23% - 10px);
+      height: auto;
+      font-size: 1em;
+    }
+    .display {
+      font-size: 1.2em;
+    }
+  }
+  
+  /* For larger screens like tablets and desktops */
+  @media (min-width: 577px) and (max-width: 1024px) {
+    #container {
+      width: 80vw;
+      aspect-ratio: 2 / 3;
+    }
+  
+    .button {
+      flex-basis: calc(25% - 10px);
+      font-size: 1.5em;
+    }
+  
+    .display {
+      font-size: 1.8em;
+    }
+  }
+  
+  /* For very large screens */
+  @media (min-width: 1025px) {
+    #container {
+      width: 50vw;
+      max-width: 400px; /* Keep the max width */
+      aspect-ratio: 2 / 3;
+    }
+  
+    .button {
+      flex-basis: calc(25% - 10px);
+      font-size: 1.6em;
+    }
+  
+    .display {
+      font-size: 2em;
+    }
+  }
+  

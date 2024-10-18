@@ -7,6 +7,7 @@ let equalPressed = false;
 const operatorRegex = /[÷×+-.]/;
 const digitRegex = /\d/;
 const inversionRegex = /\D(?=\d(?!.*\D\d))/;
+// const buttons = document.querySelectorAll('.button');
 
 let backspace = (str) => str.slice(0, -1);
 let replaceLastChar = (str, char) => expression = backspace(str).concat(char);
@@ -15,6 +16,18 @@ let appendChar = (str, char) => expression = str.concat(char);
 let appendCharAtIndex = (str, i, char) => str.substring(0, (i + 1)) + char + str.substring(i + 1);
 let isDigit = (char) => digitRegex.test(char);
 let isOperator = (char) => operatorRegex.test(char);
+let addActiveState = (event) => event.target.classList.add('active');
+let removeActiveState = (event) => event.target.classList.remove('active');
+
+// buttons.forEach(button => {
+//     button.addEventListener('touchstart', addActiveState);
+//     button.addEventListener('touchend', removeActiveState);
+//     button.addEventListener('touchcancel', removeActiveState);
+
+//     button.addEventListener('mousedown', addActiveState);
+//     button.addEventListener('mouseup', removeActiveState);
+//     button.addEventListener('mouseleave', removeActiveState); 
+// })
 
 function copyToClipboard() {
     if (resultDisplay != '|') {
