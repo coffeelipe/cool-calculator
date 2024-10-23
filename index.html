@@ -10,7 +10,9 @@
         <div id="container">
             <div class="display">
                 <div id="result" onclick="copyToClipboard(this)">|</div>
-                <div id="expression">0</div>
+                <form autocomplete="off" onsubmit="handleSubmition(event)">
+                    <input type="text" id="expression" name="expression" oninput="updateExpression()" autocomplete="off" spellcheck="false" placeholder="0" autofocus>
+                </form>
             </div>
             <div class="keyboard">
                 <button class="button" onclick="inputClick(this)">C</button>

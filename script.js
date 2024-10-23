@@ -1,13 +1,12 @@
 let expressionElement = document.getElementById("expression");
-let expression = expressionElement.innerHTML;
+let expression = expressionElement.value;
 let resultElement = document.getElementById("result");
 let resultDisplay = resultElement.innerHTML;
-let allowAppending = false;
+let allowAppending = true;
 let equalPressed = false;
-const operatorRegex = /[÷×+-.]/;
+const operatorRegex = /[÷×+-.\*\/%]/;
 const digitRegex = /\d/;
-const inversionRegex = /\D(?=\d(?!.*\D\d))/;
-// const buttons = document.querySelectorAll('.button');
+const inversionRegex = /[÷×+\-\/\*%](?=\d(?!.*[÷×+\-\/\*%]\d))/; // Matches the last operator followed by a digit in the string
 
 let backspace = (str) => str.slice(0, -1);
 let replaceLastChar = (str, char) => expression = backspace(str).concat(char);
@@ -16,31 +15,89 @@ let appendChar = (str, char) => expression = str.concat(char);
 let appendCharAtIndex = (str, i, char) => str.substring(0, (i + 1)) + char + str.substring(i + 1);
 let isDigit = (char) => digitRegex.test(char);
 let isOperator = (char) => operatorRegex.test(char);
-let addActiveState = (event) => event.target.classList.add('active');
-let removeActiveState = (event) => event.target.classList.remove('active');
+let updateExpression = () => expression = expressionElement.value;
 
-// buttons.forEach(button => {
-//     button.addEventListener('touchstart', addActiveState);
-//     button.addEventListener('touchend', removeActiveState);
-//     button.addEventListener('touchcancel', removeActiveState);
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Delete') {
+        clearDisplay();
+        updateDisplay();
+    }
+}); 
 
-//     button.addEventListener('mousedown', addActiveState);
-//     button.addEventListener('mouseup', removeActiveState);
-//     button.addEventListener('mouseleave', removeActiveState); 
-// })
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'F9') {
+        invertSign();
+        updateDisplay();
+    }
+}); 
 
-function copyToClipboard() {
-    if (resultDisplay != '|') {
-        navigator.clipboard.writeText(backspace(resultElement.innerHTML));
-        alert("Copied to clipboard!");
-    }  
+function invertSign() {
+    let lastNonDigitIndex = expression.search(inversionRegex);
+    let lastNonDigit = expression[lastNonDigitIndex];
+    console.log(lastNonDigit);
+    console.log(lastNonDigitIndex);
+
+    if (lastNonDigit == '-') { // Handles the case where the positive sign '+' should be omitted
+        expression = isOperator(expression[lastNonDigitIndex - 1]) || expression[lastNonDigitIndex - 1] === undefined ? replaceCharAtIndex(expression, lastNonDigitIndex, '') : replaceCharAtIndex(expression, lastNonDigitIndex, '+');
+    }
+    else if (lastNonDigit == '+') {
+        expression = replaceCharAtIndex(expression, lastNonDigitIndex, '-');
+    }
+    else {
+        expression = appendCharAtIndex(expression, lastNonDigitIndex, '-');
+    }
+}
+
+function clearDisplay() {
+    expression = '';
+    resultDisplay = '|';
+    allowAppending = true;
+    equalPressed = false;
+}
+
+function updateDisplay() {
+    expressionElement.value = expression;
+    expressionElement.focus();
+    resultElement.innerHTML = resultDisplay;
 }
 
 function solve(expressionStr) {
     expressionStr = expressionStr.replaceAll('÷', '/');
     expressionStr = expressionStr.replaceAll('×', '*');
+    
+    if (expressionStr.includes('%')) {
+        let matches = [...expressionStr.matchAll(/%/g)];
+        let indexes = matches.map(match => match.index);
 
-    return math.evaluate(expressionStr).toString();
+        indexes.forEach(i => {
+            if (isDigit(expressionStr[i + 1])){
+                expressionStr = appendCharAtIndex(expressionStr, i, '*');
+            }
+        });
+    }
+    expressionStr = expressionStr.replaceAll('%', '/100');
+
+    try {
+        expression = math.evaluate(expressionStr).toString();
+        resultDisplay = `${expression}|`;
+        allowAppending = false;
+        equalPressed = true;
+    }
+    catch (error) {
+        if (error.name == 'SyntaxError'){
+            resultDisplay = 'Malformed expression|';
+        }
+        else {
+            console.log(`Name: ${error.name} Message: ${error.message}`);
+            resultDisplay = 'Error';
+        }
+    }
+}
+
+function handleSubmition(event) {
+    event.preventDefault();
+    solve(expression);
+    updateDisplay();
 }
 
 function inputClick(button) {       // handles button presses
@@ -48,106 +105,64 @@ function inputClick(button) {       // handles button presses
     let lastCharacterTyped = expression[expression.length - 1];
     
     if (pressedButton == 'C') {     // Clear Button
-        expression = '0';
-        resultDisplay = '|';
-        allowAppending = false;
-        equalPressed = false;
+        clearDisplay();
     }
     else if (pressedButton == '⇦') {        // Backspace
-        expression = expression.length > 1 ? backspace(expression) : '0';
+        expression = expression.length > 1 ? backspace(expression) : '';
         if (equalPressed) {
             equalPressed = false;
             allowAppending = true;
         }
     }
     else if (pressedButton == '+/-') {
-        resultDisplay = 'under development 🤷‍♂️️';
-/*      
-        let lastNonDigitIndex = expression.search(inversionRegex);
-        let lastNonDigit = expression[lastNonDigitIndex];
-
-        if (isOperator(lastNonDigit)) {
-            if (lastNonDigit == '-') {
-                expression = isOperator(expression[lastNonDigitIndex - 1]) || expression[lastNonDigitIndex - 1] == null ? replaceCharAtIndex(expression, lastNonDigitIndex, '') : replaceCharAtIndex(expression, lastNonDigitIndex, '+');
-            }
-            else if (lastNonDigit == '+') {
-                expression = replaceCharAtIndex(expression, lastNonDigitIndex, '-');
-            }
-            else {
-                expression = appendCharAtIndex(expression, lastNonDigitIndex, '-');
-            }
+        if (expression != '') {
+            invertSign();
         }
-        else {
-            expression = '-' + expression.substring(0);
-        }
-*/
     }
     else if (pressedButton == '=') {
-        try {
-            let result = solve(expression);
-
-            expression = result;
-            resultDisplay = `${result}|`;
-            allowAppending = false;
-            equalPressed = true;
-        }
-        catch (error) {
-            if (error.name == 'SyntaxError'){
-                resultDisplay = 'Malformed Expression|';
-            }
-            else {
-                console.log(`Name: ${error.name}
-                    Message: ${error.message}`);
-                resultDisplay = 'Error';
-            }
-        }
+       solve(expression);
     }
-    else if (expression.length < 20) {  // limits the character amount on the display
-        if (isDigit(pressedButton)) {
-            if (equalPressed) {
-                expression = pressedButton;
-                allowAppending = true;
-                equalPressed = false;
-            }
-            else {
-                if (allowAppending == true) {
-                    appendChar(expression, pressedButton);
-                }
-                else {
-                    expression = pressedButton;
-                    allowAppending = true;
-                }
-            }
+    else if (isDigit(pressedButton)) {
+        if (equalPressed) {
+            expression = pressedButton;
+            allowAppending = true;
+            equalPressed = false;
         }
-        else if (pressedButton == '.') {
-            expression = isDigit(lastCharacterTyped) ? appendChar(expression, pressedButton) : replaceLastChar(expression, pressedButton);
-        }
-        else if (pressedButton == '%') {
-            resultDisplay = 'under development 🤷‍♂️️';
-        }
-        else {  // handles the operators
-            if (equalPressed) {
-                equalPressed = false;
-                allowAppending = true;
-            }
-            if (pressedButton == '-' && lastCharacterTyped != '-' && lastCharacterTyped != '.') {
-                appendChar(expression,pressedButton);
-            }
-            else if (isOperator(lastCharacterTyped)) {
-                replaceLastChar(expression, pressedButton);
-            }
-            else {
+        else {
+            if (allowAppending == true) {
                 appendChar(expression, pressedButton);
             }
+            else {
+                expression = pressedButton;
+                allowAppending = true;
+            }
         }
     }
-    else if (resultDisplay == '|') {
-        resultDisplay =  "Error|";
+    else if (pressedButton == '.') {
+        expression = isDigit(lastCharacterTyped) ? appendChar(expression, pressedButton) : replaceLastChar(expression, pressedButton);
     }
-    else {
-        alert('Character cap reached')
-    }
+    // else if (pressedButton == '%') {
+        
+    // }
+    else {  // handles the operators
+        if (equalPressed) {
+            equalPressed = false;
+            allowAppending = true;
+        }
 
-    expressionElement.innerHTML = expression;
-    resultElement.innerHTML = resultDisplay; 
+        if (expression == '') {
+            expression = '0';
+        }
+
+        if (pressedButton == '-' && lastCharacterTyped != '-' && lastCharacterTyped != '.') {
+            appendChar(expression,pressedButton);
+        }
+        else if (isOperator(lastCharacterTyped)) {
+            replaceLastChar(expression, pressedButton);
+        }
+        else {
+            appendChar(expression, pressedButton);
+        }
+    }
+    updateDisplay();
 }
