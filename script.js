@@ -57,8 +57,10 @@ function clearDisplay() {
 
 function updateDisplay() {
     expressionElement.value = expression;
-    expressionElement.focus();
     resultElement.innerHTML = resultDisplay;
+    if (window.innerWidth > 577) {
+        expressionElement.focus();
+    }
 }
 
 function solve(expressionStr) {
