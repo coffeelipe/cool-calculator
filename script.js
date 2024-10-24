@@ -4,9 +4,10 @@ let resultElement = document.getElementById("result");
 let resultDisplay = resultElement.innerHTML;
 let allowAppending = true;
 let equalPressed = false;
+const easterEggs = ['332393', '62442', "It's Morphing Time!", 'Yer a wizard, Harry! 🪄️'];
 const operatorRegex = /[÷×+-.\*\/%]/;
 const digitRegex = /\d/;
-const inversionRegex = /[÷×+\-\/\*%](?=\d(?!.*[÷×+\-\/\*%]\d))/; // Matches the last operator followed by a digit in the string
+const inversionRegex = /[÷×+\-\/\*%](?=\d(?!.*[÷×+\-\/\*%]\d))/; // Matches the last special sign except the dot '.' followed by a digit in the string
 
 let backspace = (str) => str.slice(0, -1);
 let replaceLastChar = (str, char) => expression = backspace(str).concat(char);
@@ -29,13 +30,18 @@ document.addEventListener('keydown', function(event) {
         invertSign();
         updateDisplay();
     }
-}); 
+});
+
+function playEasterEgg() {
+        let egIndex = easterEggs.findIndex(eg => eg == expression);
+        let audio = new Audio(`sfx/easter-egg-${egIndex}.mp3`);
+        resultDisplay = easterEggs[egIndex + 2];
+        audio.play();
+}
 
 function invertSign() {
     let lastNonDigitIndex = expression.search(inversionRegex);
     let lastNonDigit = expression[lastNonDigitIndex];
-    console.log(lastNonDigit);
-    console.log(lastNonDigitIndex);
 
     if (lastNonDigit == '-') { // Handles the case where the positive sign '+' should be omitted
         expression = isOperator(expression[lastNonDigitIndex - 1]) || expression[lastNonDigitIndex - 1] === undefined ? replaceCharAtIndex(expression, lastNonDigitIndex, '') : replaceCharAtIndex(expression, lastNonDigitIndex, '+');
@@ -98,18 +104,25 @@ function solve(expressionStr) {
 
 function handleSubmition(event) {
     event.preventDefault();
-    solve(expression);
+    if (easterEggs.includes(expression)) {
+        playEasterEgg();
+    }
+    else {
+        if (expression != '') {
+            solve(expression);
+        }
+    }
     updateDisplay();
 }
 
-function inputClick(button) {       // handles button presses
+function inputClick(button) {
     let pressedButton = button.innerHTML;
     let lastCharacterTyped = expression[expression.length - 1];
     
-    if (pressedButton == 'C') {     // Clear Button
+    if (pressedButton == 'C') {
         clearDisplay();
     }
-    else if (pressedButton == '⇦') {        // Backspace
+    else if (pressedButton == '⇦') {
         expression = expression.length > 1 ? backspace(expression) : '';
         if (equalPressed) {
             equalPressed = false;
@@ -122,7 +135,14 @@ function inputClick(button) {       // handles button presses
         }
     }
     else if (pressedButton == '=') {
-       solve(expression);
+        if (easterEggs.includes(expression)) {
+            playEasterEgg();
+        }
+        else {
+            if (expression != '') {
+                solve(expression);
+            }
+        }
     }
     else if (isDigit(pressedButton)) {
         if (equalPressed) {
@@ -143,9 +163,9 @@ function inputClick(button) {       // handles button presses
     else if (pressedButton == '.') {
         expression = isDigit(lastCharacterTyped) ? appendChar(expression, pressedButton) : replaceLastChar(expression, pressedButton);
     }
-    // else if (pressedButton == '%') {
-        
-    // }
+    else if (pressedButton == '%') {
+        appendChar(expression, pressedButton);
+    }
     else {  // handles the operators
         if (equalPressed) {
             equalPressed = false;
@@ -157,9 +177,13 @@ function inputClick(button) {       // handles button presses
         }
 
         if (pressedButton == '-' && lastCharacterTyped != '-' && lastCharacterTyped != '.') {
-            appendChar(expression,pressedButton);
+            appendChar(expression, pressedButton);
         }
-        else if (isOperator(lastCharacterTyped)) {
+        else if (isOperator(lastCharacterTyped) && lastCharacterTyped != '%') {
+            if (lastCharacterTyped == '-' && isOperator(expression[expression.length - 2])) {
+                expression = backspace(expression);
+                replaceLastChar(expression, pressedButton);
+            }
             replaceLastChar(expression, pressedButton);
         }
         else {
