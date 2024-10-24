@@ -38,6 +38,12 @@ function playEasterEgg() {
         resultDisplay = easterEggs[egIndex + 2];
         audio.play();
 }
+function copyToClipboard() {
+    if (resultDisplay != '|') {
+        navigator.clipboard.writeText(backspace(resultElement.innerHTML));
+        alert("Copied to clipboard!");
+    }
+}
 
 function invertSign() {
     let lastNonDigitIndex = expression.search(inversionRegex);
