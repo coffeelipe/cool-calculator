@@ -4,7 +4,8 @@ let resultElement = document.getElementById("result");
 let resultDisplay = resultElement.innerHTML;
 let allowAppending = true;
 let equalPressed = false;
-const easterEggs = ['332393', '62442', "It's Morphing Time!", 'Yer a wizard, Harry! 🪄️'];
+const easterEggs = ['332393', '62442', '33542283'];
+const egMessages = ["It's Morphing Time!", 'Yer a wizard, Harry! 🪄️', '3am already, babe? ❤️'];
 const operatorRegex = /[÷×+-.\*\/%]/;
 const digitRegex = /\d/;
 const inversionRegex = /[÷×+\-\/\*%](?=\d(?!.*[÷×+\-\/\*%]\d))/; // Matches the last special sign except the dot '.' followed by a digit in the string
@@ -35,7 +36,7 @@ document.addEventListener('keydown', function(event) {
 function playEasterEgg() {
         let egIndex = easterEggs.findIndex(eg => eg == expression);
         let audio = new Audio(`sfx/easter-egg-${egIndex}.mp3`);
-        resultDisplay = easterEggs[egIndex + 2];
+        resultDisplay = egMessages[egIndex];
         audio.play();
 }
 function copyToClipboard() {
